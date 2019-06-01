@@ -6,6 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import org.jgrapht.graph.DefaultEdge;
 
 import it.polito.tdp.flight.model.Airline;
 import it.polito.tdp.flight.model.Airport;
@@ -69,6 +72,35 @@ public class FlightDAO {
 						res.getString("country"), res.getString("IATA_FAA"), res.getString("ICAO"),
 						res.getDouble("Latitude"), res.getDouble("Longitude"), res.getFloat("timezone"),
 						res.getString("dst"), res.getString("tz")));
+			}
+			conn.close();
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
+	}
+	
+
+	public List<DefaultEdge> getArchiPesati(int distanza,Map <Integer,Airport>mappaAirport) {
+		String sql = "SELECT a1.Airport_ID , a2.Airport_ID " + 
+				"FROM airport as a1 , airport AS  a2 , route AS r " + 
+				"WHERE a1.Airport_ID<> a2.Airport_ID AND  " + 
+				"a1.Airport_ID = r.Source_airport_ID AND a2.Airport_ID = r.Destination_airport_ID " + 
+				"GROUP BY a1.Airport_ID,a2.Airport_ID  ";
+		List<DefaultEdge> list = new ArrayList<>();
+		
+		try {
+			Connection conn = DBConnect.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			
+			st.setInt(1, distanza);
+			
+			ResultSet res = st.executeQuery();
+			
+
+			while (res.next()) {
+				
 			}
 			conn.close();
 			return list;
